@@ -2,6 +2,7 @@
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { FlipHorizontal } from "lucide-react";
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 
@@ -35,7 +36,15 @@ const HomePage = (props: Props) => {
           {/* Top Section */}
           <div className="flex flex-col gap-2">
             <ModeToggle />
-
+            <Button
+              variant={"outline"}
+              size={"icon"}
+              onClick={() => {
+                setMirrored((prev) => !prev);
+              }}
+            >
+              <FlipHorizontal />
+            </Button>
             <Separator />
           </div>
 
