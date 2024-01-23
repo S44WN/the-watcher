@@ -26,7 +26,8 @@ import { toast } from "sonner";
 import "@tensorflow/tfjs-backend-cpu";
 import "@tensorflow/tfjs-backend-webgl";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
-import { log } from "console";
+import { DetectedObject, ObjectDetection } from "@tensorflow-models/coco-ssd";
+import { drawOnCanvas } from "@/utils/draw";
 
 type Props = {};
 
@@ -39,7 +40,7 @@ const HomePage = (props: Props) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(0.8);
-  const [model, setModel] = useState<cocoSsd.ObjectDetection>();
+  const [model, setModel] = useState<ObjectDetection>();
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const HomePage = (props: Props) => {
 
   //loads model
   async function initModel() {
-    const loadedModel: cocoSsd.ObjectDetection = await cocoSsd.load({
+    const loadedModel: ObjectDetection = await cocoSsd.load({
       base: "mobilenet_v2",
     });
     setModel(loadedModel);
@@ -69,20 +70,24 @@ const HomePage = (props: Props) => {
       webcamRef.current.video &&
       webcamRef.current.video.readyState === 4
     ) {
-      const predictions = await model.detect(webcamRef.current.video);
-      console.log(predictions);
+      const predictions: DetectedObject[] = await model.detect(
+        webcamRef.current.video
+      );
+
+      resizeCanvas(canvasRef, webcamRef);
+      drawOnCanvas(mirrored, predictions, canvasRef.current?.getContext("2d"));
     }
   }
 
   useEffect(() => {
     interval = setInterval(() => {
       runPrediction();
-    }, 1000);
+    }, 100);
 
     return () => {
       clearInterval(interval);
     };
-  }, [webcamRef.current, model]);
+  }, [webcamRef.current, model, mirrored]);
 
   return (
     <div className="flex h-screen">
@@ -320,3 +325,18 @@ const HomePage = (props: Props) => {
 };
 
 export default HomePage;
+
+//resize canvas
+function resizeCanvas(
+  canvasRef: React.RefObject<HTMLCanvasElement>,
+  webcamRef: React.RefObject<Webcam>
+) {
+  const canvas = canvasRef.current;
+  const video = webcamRef.current?.video;
+
+  if (canvas && video) {
+    const { videoWidth, videoHeight } = video;
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+  }
+}
