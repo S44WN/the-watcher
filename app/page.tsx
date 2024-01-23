@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useRef, useState } from "react";
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +20,6 @@ import {
   Video,
   Volume2,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
 import { Rings } from "react-loader-spinner";
 import Webcam from "react-webcam";
 import { toast } from "sonner";
@@ -28,8 +28,7 @@ import "@tensorflow/tfjs-backend-webgl";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { DetectedObject, ObjectDetection } from "@tensorflow-models/coco-ssd";
 import { drawOnCanvas } from "@/utils/draw";
-import { format } from "path";
-import { start } from "repl";
+import SocialMediaLinks from "@/components/social-links";
 
 type Props = {};
 
@@ -253,6 +252,18 @@ const HomePage = (props: Props) => {
 
   function userPromptScreenshot() {
     //take pictures
+    if (!webcamRef.current) {
+      toast("Camera not found. Please refresh.");
+    } else {
+      const imgSrc = webcamRef.current.getScreenshot();
+      const blob = base64toBlob(imgSrc);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `image-${formatDate(new Date())}.png`;
+      a.click();
+      toast("Screenshot saved to downloads");
+    }
     //save it to downloads
   }
 
@@ -397,9 +408,7 @@ const HomePage = (props: Props) => {
           <Separator />
           <li className="space-y-4">
             <strong>Share your thoughts 💬 </strong>
-            {/* <SocialMediaLinks /> */}
-            <br />
-            <br />
+            <SocialMediaLinks />
             <br />
           </li>
         </ul>
@@ -440,4 +449,17 @@ function formatDate(date: Date) {
       date.getSeconds().toString().padStart(2, "0"),
     ].join("-");
   return formattedDate;
+}
+
+//convert base64 to blob
+function base64toBlob(base64Data: any) {
+  const byteCharacters = atob(base64Data.split(",")[1]);
+  const arrayBuffer = new ArrayBuffer(byteCharacters.length);
+  const byteArray = new Uint8Array(arrayBuffer);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArray[i] = byteCharacters.charCodeAt(i);
+  }
+
+  return new Blob([arrayBuffer], { type: "image/png" }); // Specify the image type here
 }
