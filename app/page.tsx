@@ -19,7 +19,7 @@ import {
   Video,
   Volume2,
 } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Rings } from "react-loader-spinner";
 import Webcam from "react-webcam";
 import { toast } from "sonner";
@@ -37,6 +37,27 @@ const HomePage = (props: Props) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(0.8);
+  const [model, setModel] = useState<cocoSsd.ObjectDetection>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLoading(true);
+    initModel();
+  }, []);
+
+  //loads model
+  async function initModel() {
+    const loadedModel: cocoSsd.ObjectDetection = await cocoSsd.load({
+      base: "mobilenet_v2",
+    });
+    setModel(loadedModel);
+  }
+
+  useEffect(() => {
+    if (model) {
+      setLoading(false);
+    }
+  }, [model]);
 
   return (
     <div className="flex h-screen">
@@ -136,6 +157,12 @@ const HomePage = (props: Props) => {
           <RenderFeatureHighlightsSection />
         </div>
       </div>
+      {loading && (
+        <div className="z-50 absolute w-full h-full flex items-center justify-center bg-primary-foreground">
+          Hold up...
+          <Rings color="red" height={80} />
+        </div>
+      )}
     </div>
   );
 
