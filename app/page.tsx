@@ -2,9 +2,12 @@
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FlipHorizontal } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
+import { Camera, FlipHorizontal, PersonStanding, Video } from "lucide-react";
 import React, { useRef, useState } from "react";
+import { Rings } from "react-loader-spinner";
 import Webcam from "react-webcam";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -13,6 +16,9 @@ const HomePage = (props: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [mirrored, setMirrored] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [autoRecordEnabled, setAutoRecordEnabled] = useState<boolean>(false);
+
   return (
     <div className="flex h-screen">
       {/* Left division - webcam and canvas */}
@@ -45,14 +51,40 @@ const HomePage = (props: Props) => {
             >
               <FlipHorizontal />
             </Button>
-            <Separator />
+            <Separator className="my-2" />
           </div>
 
           {/* Middle Section */}
           <div className="flex flex-col gap-2">
-            <Separator />
+            <Separator className="my-2" />
+            <Button
+              variant={"outline"}
+              size={"icon"}
+              onClick={userPromptScreenshot}
+            >
+              <Camera />
+            </Button>
 
-            <Separator />
+            <Button
+              variant={isRecording ? "destructive" : "outline"}
+              size={"icon"}
+              onClick={userPromptRecord}
+            >
+              <Video />
+            </Button>
+
+            <Separator className="my-2" />
+            <Button
+              variant={autoRecordEnabled ? "destructive" : "outline"}
+              size={"icon"}
+              onClick={toggleAutoRecord}
+            >
+              {autoRecordEnabled ? (
+                <Rings color="white" height={45} />
+              ) : (
+                <PersonStanding />
+              )}
+            </Button>
           </div>
 
           {/* Bottom Section */}
@@ -61,6 +93,32 @@ const HomePage = (props: Props) => {
       </div>
     </div>
   );
+
+  //handler funtions
+
+  function userPromptScreenshot() {
+    //take pictures
+    //save it to downloads
+  }
+
+  function userPromptRecord() {
+    //check if recording
+    //if yes, stop recording
+    //save it to downloads
+    //if no, start recording
+    //rstart recording
+  }
+
+  function toggleAutoRecord() {
+    if (autoRecordEnabled) {
+      //didnt use prev => !prev because we want to show toast
+      setAutoRecordEnabled(false);
+      toast("Auto record disabled"); //show toast
+    } else {
+      setAutoRecordEnabled(true);
+      toast("Auto record enabled");
+    }
+  }
 };
 
 export default HomePage;
