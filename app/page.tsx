@@ -28,10 +28,16 @@ import "@tensorflow/tfjs-backend-webgl";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { DetectedObject, ObjectDetection } from "@tensorflow-models/coco-ssd";
 import { drawOnCanvas } from "@/utils/draw";
+import { format } from "path";
+import { start } from "repl";
 
 type Props = {};
 
 let interval: any = null;
+let stopTimeout: any = null;
+
+const sUsrAg = navigator.userAgent; //get the user agent string
+
 const HomePage = (props: Props) => {
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,6 +48,43 @@ const HomePage = (props: Props) => {
   const [volume, setVolume] = useState<number>(0.8);
   const [model, setModel] = useState<ObjectDetection>();
   const [loading, setLoading] = useState<boolean>(false);
+
+  const mediaRecoderRef = useRef<MediaRecorder | null>(null);
+
+  //initailize media recorder
+  useEffect(() => {
+    if (webcamRef && webcamRef.current) {
+      let stream: any = null;
+
+      if (sUsrAg.indexOf("Firefox") > -1) {
+        stream = (webcamRef.current.video as any).mozCaptureStream();
+      } else {
+        stream = (webcamRef.current.video as any).captureStream();
+      }
+
+      if (stream) {
+        mediaRecoderRef.current = new MediaRecorder(stream);
+
+        mediaRecoderRef.current.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            const recordedBlob = new Blob([e.data], { type: "video" });
+            const videoURL = URL.createObjectURL(recordedBlob);
+
+            const a = document.createElement("a");
+            a.href = videoURL;
+            a.download = `video-${formatDate(new Date())}.webm`;
+            a.click();
+          }
+        };
+        mediaRecoderRef.current.onstart = (e) => {
+          setIsRecording(true);
+        };
+        mediaRecoderRef.current.onstop = (e) => {
+          setIsRecording(false);
+        };
+      }
+    }
+  }, [webcamRef]);
 
   useEffect(() => {
     setLoading(true);
@@ -76,6 +119,16 @@ const HomePage = (props: Props) => {
 
       resizeCanvas(canvasRef, webcamRef);
       drawOnCanvas(mirrored, predictions, canvasRef.current?.getContext("2d"));
+
+      let isPerson: boolean = false;
+      if (predictions.length > 0) {
+        predictions.forEach((prediction) => {
+          isPerson = prediction.class === "person";
+        });
+        if (isPerson && autoRecordEnabled) {
+          startRecording(true);
+        }
+      }
     }
   }
 
@@ -87,7 +140,7 @@ const HomePage = (props: Props) => {
     return () => {
       clearInterval(interval);
     };
-  }, [webcamRef.current, model, mirrored]);
+  }, [webcamRef.current, model, mirrored, autoRecordEnabled]);
 
   return (
     <div className="flex h-screen">
@@ -204,11 +257,42 @@ const HomePage = (props: Props) => {
   }
 
   function userPromptRecord() {
-    //check if recording
-    //if yes, stop recording
-    //save it to downloads
-    //if no, start recording
-    //rstart recording
+    if (!webcamRef.current) {
+      toast("Camera not found. Please refresh.");
+    }
+
+    if (mediaRecoderRef.current?.state === "recording") {
+      //check if recording
+      //if yes, stop recording
+      //save it to downloads
+      mediaRecoderRef.current.requestData();
+      clearTimeout(stopTimeout);
+      mediaRecoderRef.current.stop();
+      toast("Recording saved to downloads");
+    } else {
+      //if no, start recording
+      //rstart recording
+      startRecording(false);
+    }
+  }
+
+  function startRecording(dobeep: boolean) {
+    if (
+      mediaRecoderRef.current &&
+      mediaRecoderRef.current?.state !== "recording"
+    ) {
+      mediaRecoderRef.current.start();
+      dobeep && beep(volume);
+      toast("Recording started");
+
+      stopTimeout = setTimeout(() => {
+        if (mediaRecoderRef.current?.state === "recording") {
+          mediaRecoderRef.current.requestData();
+          mediaRecoderRef.current.stop();
+          toast("Recording saved to downloads");
+        }
+      }, 30000);
+    }
   }
 
   function toggleAutoRecord() {
@@ -339,4 +423,21 @@ function resizeCanvas(
     canvas.width = videoWidth;
     canvas.height = videoHeight;
   }
+}
+
+//format date
+function formatDate(date: Date) {
+  const formattedDate =
+    [
+      (date.getMonth() + 1).toString().padStart(2, "0"),
+      date.getDate().toString().padStart(2, "0"),
+      date.getFullYear(),
+    ].join("-") +
+    " " +
+    [
+      date.getHours().toString().padStart(2, "0"),
+      date.getMinutes().toString().padStart(2, "0"),
+      date.getSeconds().toString().padStart(2, "0"),
+    ].join("-");
+  return formattedDate;
 }
