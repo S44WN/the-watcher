@@ -9,6 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Toaster } from "@/components/ui/sonner";
+import { beep } from "@/utils/audio";
 import {
   Camera,
   FlipHorizontal,
@@ -104,7 +105,7 @@ const HomePage = (props: Props) => {
           <div className="flex flex-col gap-2">
             <Separator className="my-2" />
             <Popover>
-              <PopoverTrigger>
+              <PopoverTrigger asChild>
                 <Button variant={"outline"} size={"icon"}>
                   <Volume2 />
                 </Button>
