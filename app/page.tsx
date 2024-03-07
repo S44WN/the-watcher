@@ -149,11 +149,11 @@ const HomePage = (props: Props) => {
           <Webcam
             ref={webcamRef}
             mirrored={mirrored}
-            className="h-full w-full object-contain p-2"
+            className="h-full w-full object-contain p-2 rounded-[30px] overflow-hidden"
           />
           <canvas
             ref={canvasRef}
-            className="absolute top-0 left-0 h-full w-full object-contain"
+            className="absolute top-0 left-0 h-full w-full object-contain rounded-[30px] overflow-hidden"
           ></canvas>
         </div>
       </div>
