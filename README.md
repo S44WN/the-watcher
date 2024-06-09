@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AI-Powered Web App
+
+![Web App Screenshot](web_app_screenshot.png)
+
+## Overview
+
+This web application is powered by AI and built using ShadcnUI and Next.js 14. It incorporates various technologies such as TensorFlowJS for machine learning capabilities and TailwindCSS for styling. The main features of this application include people detection, recording, dark mode, audio notifications, animations, volume control, social handles integration, image capture, and deployment options.
+
+## Features
+
+- **People Detection**: Utilizes TensorFlowJS and the cocossd model for real-time people detection.
+- **Recording**: Allows users to record video directly from their webcam.
+- **Dark Mode**: Supports both light and dark themes for user preference.
+- **Audio Notifications**: Plays sounds for notifications to enhance user experience.
+- **Animations**: Adds animations to buttons and other UI components for visual appeal.
+- **Volume Slider**: Includes a popover component for adjusting volume settings.
+- **Social Handles**: Provides links to various social media handles for connectivity.
+- **Image Capture**: Enables users to capture images from the webcam.
+- **Deployment**: Offers options for deploying the application to various platforms.
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository.
+2. Install dependencies using `npm install`.
+3. Run the application locally using `npm run dev`.
+4. Explore the different features and functionalities.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Dependencies
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- ShadcnUI
+- Next.js 14
+- TensorFlowJS
+- TailwindCSS
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Start the application by running `npm run dev`.
+2. Haven't deployed but use any service to deploy.
+3. Use the various features provided by the application.
+4. Enjoy seamless people detection, recording, and other functionalities.
 
-## Learn More
+## Resource
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [Tutorial by Arcade Maple Youtube Channel](https://www.youtube.com/watch?v=NStucy_xte8)
